@@ -10,8 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,9 +26,9 @@ public class ToolController {
   }
 
   @GetMapping("/tools")
-  public ResponseEntity<List<ToolResponse>> getTools() {
+  public ResponseEntity<List<ToolResponse>> getTools(@RequestParam(required = false) String tag) {
     try {
-      List<ToolResponse> tools = toolService.getTools();
+      List<ToolResponse> tools = toolService.getTools(tag);
       return ResponseEntity.status(HttpStatus.OK).body(tools);
     } catch (Exception e) {
       List<Error> errors = new ArrayList<>(

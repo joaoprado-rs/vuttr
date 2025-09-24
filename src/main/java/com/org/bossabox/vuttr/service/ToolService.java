@@ -5,11 +5,11 @@ import com.org.bossabox.vuttr.dto.ToolResponse;
 import com.org.bossabox.vuttr.entity.Tool;
 import com.org.bossabox.vuttr.entity.ToolRepository;
 import io.micrometer.common.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author joao.prado
@@ -50,18 +50,34 @@ public class ToolService {
     );
   }
 
-  public List<ToolResponse> getTools() {
+  public List<ToolResponse> getTools(String tag) {
     List<ToolResponse> tools = new ArrayList<>();
-    toolRepository.findAll().forEach(tool -> {
-      ToolResponse toolResponse = new ToolResponse(
-          String.valueOf(tool.getId()),
-          tool.getTitle(), tool.getLink(),
-          tool.getDescription(),
-          tool.getTags(),
-          null
-      );
-      tools.add(toolResponse);
-    });
+    if (StringUtils.isBlank(tag)) {
+      //Return all
+      toolRepository.findAll().forEach(tool -> {
+        ToolResponse toolResponse = new ToolResponse(
+            String.valueOf(tool.getId()),
+            tool.getTitle(), tool.getLink(),
+            tool.getDescription(),
+            tool.getTags(),
+            null
+        );
+        tools.add(toolResponse);
+      });
+    } else {
+      //Return filtered with tag='x'
+      toolRepository.findToolsByTagsContainingIgnoreCase(tag).forEach( tool -> {
+        ToolResponse toolResponse = new ToolResponse(
+            String.valueOf(tool.getId()),
+            tool.getTitle(), tool.getLink(),
+            tool.getDescription(),
+            tool.getTags(),
+            null
+        );
+        tools.add(toolResponse);
+      });
+      return tools;
+    }
     return tools;
   }
 }
